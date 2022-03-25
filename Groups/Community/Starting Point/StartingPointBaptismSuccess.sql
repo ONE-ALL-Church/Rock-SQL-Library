@@ -51,20 +51,28 @@ INNER JOIN AttributeValue avq
         AND avq.AttributeId = 6312
 INNER JOIN GroupMember gm
     ON gm.GroupId = g.Id
-LEFT JOIN AttributeValue avst
+INNER JOIN AttributeValue avst
     ON ami.Id = avst.EntityId
         AND avst.AttributeId = 13732
-LEFT JOIN AttributeValue avet
+INNER JOIN AttributeValue avet
     ON ami.Id = avet.EntityId
         AND avet.AttributeId = 13733
 OUTER APPLY (
     SELECT TOP 1 ao.OccurrenceDate
     FROM AttendanceOccurrence ao
     INNER JOIN Attendance a
-        ON ao.Id = a.OccurrenceId
+        ON ao.Id = a.OccurrenceId AND a.DidAttend = 1
+     INNER JOIN GroupMemberHistorical gmh
+        ON gm.Id = gmh.GroupMemberId
+            AND gmh.GroupMemberStatus != 0
+            AND ao.OccurrenceDate BETWEEN gmh.EffectiveDateTime AND gmh.ExpireDateTime
+    INNER JOIN GroupTypeRole gtr
+        ON gmh.GroupRoleId = gtr.Id
+            AND gtr.IsLeader = 0
     INNER JOIN PersonAlias pa
         ON pa.PersonId = gm.PersonId
-    WHERE g.Id = ao.GroupId
+    WHERE g.Id = ao.GroupId AND ao.OccurrenceDate BETWEEN avst.ValueAsDateTime AND avet.ValueAsDateTime
+    ORDER BY ao.OccurrenceDate 
     ) FirstAttendance
 INNER JOIN AnalyticsSourceDate asd
     ON FirstAttendance.OccurrenceDate = asd.[Date]
