@@ -7,7 +7,6 @@ SET @OADateTimeCutoff = DATEADD(d, - 0, GETUTCDATE() AT TIME ZONE 'Pacific Stand
 DECLARE @OADateTimeStart DATE
 
 SET @OADateTimeStart = DATEADD(month, - 1, GETUTCDATE() AT TIME ZONE 'Pacific Standard Time');
-SET @OADateTimeStart = '2021-09-05'
 
 SELECT [Groups].[Count] [GroupMemberCount],
     asd.[Date] [MetricValueDateTime],
