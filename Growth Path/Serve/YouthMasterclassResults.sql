@@ -1,9 +1,13 @@
+-- Tracked At: /Growth Path/Serve/YouthMasterclassResults.sql
+-- Implemented on: https://admin.oneandall.church/YouthDashboard/MasterclassProgress
+
 SELECT p.NickName,
     p.LastName,
     w.ActivatedDateTime [MasterclassStarted],
     w.CompletedDateTime [MasterclassCompleted],
     LastActivity.Name AS LastActivity,
-    LastActivity.CompletedDateTime AS LastActivityCompletedDateTime
+    LastActivity.CompletedDateTime AS LastActivityCompletedDateTime,
+    w.Id AS WorkflowId
 FROM Workflow w
 INNER JOIN AttributeValue avPerson ON w.Id = avPerson.EntityId
     AND avPerson.AttributeId = 28014
