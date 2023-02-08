@@ -1,3 +1,6 @@
+-- Tracked in: /Growth Path/Attendance/PrayerNightMonthlyForChart.sql
+-- Implemented on: https://admin.oneandall.church/LeadershipStats/attendance
+-- Description: Returns the number of people who attended a prayer night in the last 12 months, grouped by campus and month
 SELECT DISTINCT 
     asdFirstMonday.SundayDate AS [Date]
 FROM MetricValue AS mv
