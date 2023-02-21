@@ -245,3 +245,36 @@ FROM
         AND
         p.[Id] = @PersonId
 
+IF @Person != ''
+-- 15. Default Attribute Value
+SELECT DISTINCT Page.InternalName AS PageName
+	, g.Name AS GroupName
+	, a.EntityTypeId AS EntityType
+	, et.FriendlyName AS EntityName
+	, a.EntityTypeQualifierValue AS EntityId
+	, a.EntityTypeQualifierColumn AS EntityId
+	, rt.Name AS RegName
+	, dv.Name AS Dataview
+	, r.Name AS Report
+	, b.Name AS Block
+	, b.PageId
+	, s.Name AS Schedule
+FROM  Attribute a 
+INNER JOIN PersonAlias pa ON a.[DefaultValue] = TRY_CAST(pa.Guid AS varchar(50))
+	AND pa.PersonId = @PersonID
+INNER JOIN EntityType et ON a.EntityTypeId = et.Id
+LEFT JOIN Page ON a.EntityTypeQualifierValue = page.Id
+	AND et.Id = 2 
+LEFT JOIN [Group] g ON a.EntityTypeQualifierValue = g.Id
+	AND et.Id = 16
+LEFT JOIN RegistrationTemplate rt ON a.EntityTypeQualifierValue = rt.Id
+	AND et.Id = 234
+LEFT JOIN DataView dv ON a.EntityTypeQualifierValue = dv.Id
+	AND et.Id = 34
+LEFT JOIN Report r ON a.EntityTypeQualifierValue = r.Id
+	AND et.Id = 107
+LEFT JOIN Block b ON a.EntityTypeQualifierValue = b.Id
+	AND et.Id = 9
+LEFT JOIN schedule s ON a.EntityTypeQualifierValue = s.Id
+	AND et.Id = 54
+ORDER BY et.FriendlyName;
