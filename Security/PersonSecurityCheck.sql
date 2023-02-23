@@ -136,7 +136,7 @@ INNER JOIN Registrationtemplate rt ON ri.RegistrationTemplateId = rt.Id
 INNER JOIN PersonAlias pa ON ri.ContactPersonAliasId = pa.Id
 	AND pa.[PersonId] = @PersonId
 WHERE ri.IsActive = 1
-	AND ri.EndDateTime > getdate();
+	AND (ri.EndDateTime > getdate() OR ri.EndDateTime IS NULL);
 
 
 IF @Person != ''
