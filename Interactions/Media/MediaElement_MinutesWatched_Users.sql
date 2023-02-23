@@ -1,4 +1,4 @@
-SELECT me.Id, me.Name, (SUM(i.InteractionLength)/100 * me.DurationSeconds)/60
+SELECT me.Id, me.Name, (SUM(i.InteractionLength)/100 * me.DurationSeconds)/60 MinutesWatched, COUNT(pa.PersonId) AS UniqueViewers, me.CreatedDateTime
 FROM Interaction i
 INNER JOIN InteractionComponent ic ON i.InteractionComponentId = ic.Id AND ic.InteractionChannelId = 28
 INNER JOIN MediaElement me ON ic.EntityId = me.Id
