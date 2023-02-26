@@ -1,5 +1,5 @@
 --Implemented At: https://admin.oneandall.church/reporting/dataviews?DataViewId=1332&ExpandedIds=C648%2CC675%2CC688%2CC689
--- Tracked At: Mobile/DataviewJoinedServeGroupOrAttendedInLastMonth.sql
+-- Tracked At: Growth Path/Serve/DataviewJoinedServeGroupOrAttendedInLastMonth.sql
 DECLARE @OADateTime DATE
 SET @OADateTime = GETUTCDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Pacific Standard Time';
 
