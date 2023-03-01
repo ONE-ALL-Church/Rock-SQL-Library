@@ -1,15 +1,19 @@
 SELECT cci.StartDateTime
     , cci.Title
     , dvSpeaker.[Value]
-    , (SUM(i.InteractionLength) / 100 * me.DurationSeconds) / 60 MinutesWatched
+    , ROUND((SUM(i.InteractionLength) / 100 * me.DurationSeconds) / 60,0) MinutesWatched
     , COUNT(DISTINCT pa.PersonId) UniqueWatchers
+    , Round(CAST(me.DurationSeconds AS float) /60,1) LengthMinutes
+    , ROUND(((SUM(i.InteractionLength) / 100 * me.DurationSeconds) / 60) / COUNT(pa.PersonId), 1) AvgMinutesPerUser
+    , FORMAT(ROUND(((SUM(i.InteractionLength) / 100 * me.DurationSeconds) / 60) / COUNT(pa.PersonId), 1) / Round(CAST(me.DurationSeconds AS float) /60,1), 'P0') PercentWatched
+--, COUNT(i.Id) TotalInteractions
 FROM Interaction i
 INNER JOIN InteractionComponent ic
     ON i.InteractionComponentId = ic.Id
         AND ic.InteractionChannelId = 28
 INNER JOIN MediaElement me
     ON ic.EntityId = me.Id
-INNER JOIN PersonAlias pa
+LEFT JOIN PersonAlias pa
     ON i.PersonAliasId = pa.Id
 INNER JOIN AttributeValue av
     ON TRY_CAST(av.[Value] AS UNIQUEIDENTIFIER) = me.Guid
