@@ -2,11 +2,11 @@
 -- Tracked At: /Interactions/Media/MediaElement_Messages_MinutesWatched_Users
 
 SELECT cci.Id,
-    me.Id MediaId,
+    me.Id AS MediaId,
     cci.Title,
-    ROUND((SUM(i.InteractionLength) / 100 * me.DurationSeconds) / 60, 0) MinutesWatched,
-    COUNT(pa.PersonId) AS UniqueViewers,
-    ROUND(((SUM(i.InteractionLength) / 100 * me.DurationSeconds) / 60) / COUNT(pa.PersonId), 1) AvgMinutesPerUser,
+    ROUND((SUM(i.InteractionLength) / 100 * me.DurationSeconds) / 60, 0) AS MinutesWatched,
+    COUNT(DISTINCT pa.PersonId) AS UniqueViewers,
+    ROUND(((SUM(i.InteractionLength) / 100 * me.DurationSeconds) / 60) / COUNT(DISTINCT pa.PersonId), 1) AS AvgMinutesPerUser,
     me.CreatedDateTime
 FROM ContentChannelItem cci
 INNER JOIN AttributeValue av ON av.AttributeId = 27146
@@ -23,4 +23,4 @@ GROUP BY cci.Id,
     me.Id,
     me.DurationSeconds,
     me.CreatedDateTime
-ORDER BY cci.StartDateTime DESC
+ORDER BY cci.StartDateTime DESC;
