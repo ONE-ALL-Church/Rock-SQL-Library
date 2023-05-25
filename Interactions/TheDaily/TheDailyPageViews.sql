@@ -2,7 +2,19 @@ WITH InteractionDates
 AS (
     SELECT CAST(i.InteractionDateTime AS DATE) InteractionDate,
         InteractionComponentId,
-        p.Id
+        p.Id,
+        CASE 
+            WHEN p.ID IN (
+                    SELECT PersonId
+                    FROM GroupMember
+                    WHERE PersonId = p.Id
+                        AND GroupId = 340668
+                        AND GroupMemberStatus = 1
+                        AND IsArchived = 0
+                    )
+                THEN 1
+            ELSE 0
+            END [IsMember]
     FROM Interaction i
     INNER JOIN PersonAlias pa ON i.PersonAliasId = pa.Id
     INNER JOIN Person p ON pa.PersonId = p.Id
@@ -15,25 +27,50 @@ AS (
 SELECT idStart.InteractionDate,
     COUNT(DISTINCT id.Id) [Start],
     COUNT(DISTINCT CASE 
+            WHEN id.IsMember = 1
+                THEN id.Id
+            ELSE NULL
+            END) [StartSubscribed],
+    COUNT(DISTINCT CASE 
             WHEN id.InteractionComponentId = 326548
                 THEN id.Id
             ELSE NULL
             END) [Notes],
     COUNT(DISTINCT CASE 
+            WHEN id.InteractionComponentId = 326548 AND id.IsMember = 1
+                THEN id.Id
+            ELSE NULL
+            END) [NotesSubscribed],
+    COUNT(DISTINCT CASE 
             WHEN id.InteractionComponentId = 326566
                 THEN id.Id
             ELSE NULL
             END) [Prayer Session],
+        COUNT(DISTINCT CASE 
+            WHEN id.InteractionComponentId = 326566 AND id.IsMember = 1
+                THEN id.Id
+            ELSE NULL
+            END) [Prayer Session Subscribed],
     COUNT(DISTINCT CASE 
             WHEN id.InteractionComponentId = 114861
                 THEN id.Id
             ELSE NULL
             END) [Prayer Entry],
+        COUNT(DISTINCT CASE 
+            WHEN id.InteractionComponentId = 114861 AND id.IsMember = 1
+                THEN id.Id
+            ELSE NULL
+            END) [Prayer Entry Subscribed],
     COUNT(DISTINCT CASE 
             WHEN id.InteractionComponentId = 326808
                 THEN id.Id
             ELSE NULL
             END) [Success],
+        COUNT(DISTINCT CASE 
+            WHEN id.InteractionComponentId = 326808 AND id.IsMember = 1
+                THEN id.Id
+            ELSE NULL
+            END) [Success Subscribed],
     CASE 
         WHEN COUNT(DISTINCT id.Id) != 0
             THEN FORMAT(CAST(COUNT(DISTINCT CASE 
@@ -42,7 +79,16 @@ SELECT idStart.InteractionDate,
                                 ELSE NULL
                                 END) AS FLOAT) / CAST(COUNT(DISTINCT id.Id) AS FLOAT), 'P')
         ELSE NULL
-        END [PercentCompleted]
+        END [PercentCompleted],
+    CASE 
+        WHEN COUNT(DISTINCT CASE WHEN id.IsMember = 1 THEN id.Id ELSE NULL END) != 0
+            THEN FORMAT(CAST(COUNT(DISTINCT CASE 
+                                WHEN id.InteractionComponentId = 326808 AND id.IsMember = 1
+                                    THEN id.Id
+                                ELSE NULL
+                                END) AS FLOAT) / CAST(COUNT(DISTINCT CASE WHEN id.IsMember = 1 THEN id.Id ELSE NULL END) AS FLOAT), 'P')
+        ELSE NULL
+        END [PercentCompletedSubscribed]
 FROM InteractionDates idStart
 INNER JOIN InteractionDates id ON id.InteractionDate = idStart.InteractionDate
     AND id.Id = idStart.Id
