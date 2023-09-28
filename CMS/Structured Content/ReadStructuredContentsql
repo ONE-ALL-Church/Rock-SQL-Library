@@ -1,0 +1,2 @@
+SELECT * FROM ContentChannelItem 
+WHERE ID = 7279
