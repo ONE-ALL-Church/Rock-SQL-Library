@@ -1,10 +1,3 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-
-ALTER VIEW [dbo].[CCVYouthCensusGroupsNotResponded]
-AS
 SELECT g.*
 FROM [Group] g
 WHERE g.GroupTypeId = 105
@@ -21,5 +14,5 @@ WHERE g.GroupTypeId = 105
                     AND w.[Status] NOT LIKE '%Remove Leader%'
                     )
                 AND av.Value = TRY_CAST(g.Guid AS NVARCHAR(50))
-        )
-GO
+                AND w.CompletedDateTime > DATEADD(month, 4, GETDATE()) 
+    )

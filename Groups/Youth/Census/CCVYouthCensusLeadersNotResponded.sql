@@ -1,10 +1,3 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-
-ALTER VIEW [dbo].[CCVYouthCensusLeadersNotResponded] AS
-
 SELECT DISTINCT gm.PersonId AS 'Id'
     , g.Id AS 'GroupId'
     , g.Guid AS 'GroupGuid'
@@ -22,7 +15,7 @@ INNER JOIN GroupTypeRole gtr
         AND gtr.IsLeader = 1
 WHERE gt.Id = 105 AND
      NOT EXISTS (
-        SELECT1 
+        SELECT 1
         FROM Workflow w
         INNER JOIN AttributeValue av
             ON w.Id = av.EntityId
@@ -32,6 +25,7 @@ WHERE gt.Id = 105 AND
                     AND w.[Status] NOT LIKE '%Remove Leader%'
                     )
                 AND TRY_CAST(g.Guid AS NVARCHAR(50)) = av.[Value]
+                AND w.CompletedDateTime > DATEADD(month, 4, GETDATE()) 
         )
     AND NOT EXISTS (
         SELECT 1
@@ -52,9 +46,5 @@ WHERE gt.Id = 105 AND
         INNER JOIN [Group] g
             ON gm2.GroupId = g.Id
                 AND av.[Value] = g.Guid
+        WHERE w.CompletedDateTime > DATEADD(month, 4, GETDATE()) 
         )
-
-
-
-
-GO
