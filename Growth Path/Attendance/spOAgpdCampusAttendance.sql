@@ -52,12 +52,16 @@ FROM (
             ON mvpc.EntityId = c.Id
         INNER JOIN AnalyticsSourceDate asd
             ON convert(DATE, mv.MetricValueDateTime, 101) = asd.DATE
-        WHERE mv.MetricId IN (6, 7, 8, 16, 17, 18)
+        WHERE mv.MetricId IN (6, 7, 8, 16, 17, 18, 161, 162)
             AND (
                 s.CategoryId = 50
                 OR s.Id = 4498
                 OR s.CategoryId = 326
                 )
+            AND (
+                [MV].[MetricID] NOT IN (161, 162)
+                OR [MV].[MetricValueDateTime] > '2025-01-13'
+            )
             AND mv.MetricValueDateTime <= @PreviousSunday
             AND mv.MetricValueDateTime >= DATEADD(WEEK, - 12, @PreviousSunday)
             AND mv.MetricValueDateTime != '2019-12-22'
@@ -91,11 +95,14 @@ LEFT JOIN (
             AND mpc.EntityTypeId = @CampusEntityType
     INNER JOIN [Campus] AS C
         ON mvpc.EntityId = c.Id
-    WHERE mv.MetricId IN (6, 7, 8, 16, 17, 18)
+    WHERE mv.MetricId IN (6, 7, 8, 16, 17, 18, 161, 162)
         AND (
-            s.CategoryId IN (50, 337)
+            s.CategoryId IN (50, 326, 337)
             OR s.Id = 4498
-            OR s.CategoryId = 326
+            )
+        AND (
+            [MV].[MetricID] NOT IN (161, 162)
+            OR [MV].[MetricValueDateTime] > '2025-01-13'
             )
         AND mv.MetricValueDateTime = @PreviousSunday
     GROUP BY mvpc.EntityId
@@ -120,12 +127,16 @@ LEFT JOIN (
         ON [C].[Id] = [MVCampus].[EntityId]
     INNER JOIN AnalyticsSourceDate asd
         ON convert(DATE, mv.MetricValueDateTime, 101) = asd.DATE
-    WHERE [MV].[MetricId] IN (7, 6, 8, 16, 17, 18, 51, 52, 53)
+    WHERE [MV].[MetricId] IN (7, 6, 8, 16, 17, 18, 51, 52, 53, 161, 162)
         AND [MV].[MetricValueDateTime] > DATEADD(YEAR, - 8, GETDATE())
         AND [MV].[YValue] != 0
         AND (
             [MV].[MetricID] NOT IN (51, 52, 53)
             OR [MV].[MetricValueDateTime] < '2018-08-05'
+            )
+        AND (
+            [MV].[MetricID] NOT IN (161, 162)
+            OR [MV].[MetricValueDateTime] > '2025-01-13'
             )
         AND mv.MetricValueDateTime BETWEEN DATEADD(WEEK, - 12, @PreviousYearSunday) AND @PreviousYearSunday
         AND mv.MetricValueDateTime != '2019-12-22'
@@ -152,12 +163,16 @@ LEFT JOIN (
         ON [C].[Id] = [MVCampus].[EntityId]
     INNER JOIN AnalyticsSourceDate asd
         ON convert(DATE, mv.MetricValueDateTime, 101) = asd.DATE
-    WHERE [MV].[MetricId] IN (7, 6, 8, 10, 16, 17, 18, 51, 52, 53)
+    WHERE [MV].[MetricId] IN (7, 6, 8, 10, 16, 17, 18, 51, 52, 53, 161, 162)
         AND [MV].[MetricValueDateTime] > DATEADD(YEAR, - 8, GETDATE())
         AND [MV].[YValue] != 0
         AND (
             [MV].[MetricID] NOT IN (51, 52, 53)
             OR [MV].[MetricValueDateTime] < '2018-08-05'
+            )
+        AND (
+            [MV].[MetricID] NOT IN (161, 162)
+            OR [MV].[MetricValueDateTime] > '2025-01-13'
             )
         AND mv.MetricValueDateTime BETWEEN DATEADD(WEEK, - 12, @FirstSunday) AND @FirstSunday
         AND mv.MetricValueDateTime != '2019-12-22'
