@@ -2,6 +2,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
+
 /*
 <doc>
  <summary>
@@ -20,7 +21,7 @@ GO
  </code>
 </doc>
 */
-ALTER PROCEDURE [dbo].[spCrm_PersonDuplicateFinder]
+ALTER PROCEDURE [dbo].[spCrm_OAPersonDuplicateFinder]
 AS
 BEGIN
     
@@ -273,9 +274,9 @@ BEGIN
                     FROM [GroupMember] [gm] 
                     JOIN [Group] [g] ON [gm].[GroupId] = [g].[Id]
                     JOIN [GroupLocation] [gl] ON [gl].[GroupId] = [g].[id]
-                    JOIN [Location] [l] ON [l].[Id] = [gl].[LocationId]
-					WHERE [g].[GroupTypeId] = @cGROUPTYPE_FAMILY_ID
-						AND [gl].[GroupLocationTypeValueId] = @cLOCATION_TYPE_HOME_ID
+                    JOIN [Location] [l] ON [l].[Id] = [gl].[LocationId] AND [l].Street1 != '091LaymanCourt'
+     WHERE [g].[GroupTypeId] = @cGROUPTYPE_FAMILY_ID
+                    AND [gl].[GroupLocationTypeValueId] = @cLOCATION_TYPE_HOME_ID
                     GROUP BY [gl].[LocationID]
                         ,[gm].[GroupRoleId]
                     ) [a]
@@ -288,7 +289,6 @@ BEGIN
             JOIN [Person] [p] ON [p].[Id] = [pa].[PersonId]
             WHERE [m].[GroupRoleId] = [gm].[GroupRoleId] -- only consider it a potential duplicate person if the gender,role and location are the same (to reduce false matches due to married couples)
                 AND [pa].[AliasPersonId] = [pa].[PersonId] -- limit to only the primary alias
-				AND [gl].[GroupLocationTypeValueId] = @cLOCATION_TYPE_HOME_ID
                 AND @compareByAddress = 1
             ) [a]
         GROUP BY [PersonAliasId]
@@ -760,24 +760,30 @@ BEGIN
  --PRINT'Update score for gender matches: ' + CAST(DATEDIFF(s, @ms, GETDATE()) as varchar)
  --SET @ms = GETDATE()
     -- Increment the score on potential matches that have the same campus
-    UPDATE pd
-    SET [Score] = [Score] + @cScoreWeightCampus
-        ,[ScoreDetail] += '|Campus'
+UPDATE pd
+    SET [Score] = [Score] + @cScoreWeightCampus,
+        [ScoreDetail] += '|Campus'
     FROM PersonDuplicate pd
-    JOIN PersonAlias pa1 ON pa1.Id = pd.PersonAliasId
-    JOIN PersonAlias pa2 ON pa2.Id = pd.DuplicatePersonAliasId
-    JOIN Person p1 ON p1.Id = pa1.PersonId
-    JOIN Person p2 ON p2.Id = pa2.PersonId
-    JOIN [GroupMember] [gm1] ON [gm1].[PersonId] = [p1].[Id]
-    JOIN [Group] [g1] ON [gm1].[GroupId] = [g1].[Id]
-    JOIN [GroupMember] [gm2] ON [gm2].[PersonId] = [p2].[Id]
-    JOIN [Group] [g2] ON [gm2].[GroupId] = [g2].[Id]
-    WHERE g1.CampusId = g2.CampusId
+    WHERE @compareByCampus = 1
+    AND EXISTS (
+        SELECT g1.CampusId
+        FROM PersonAlias pa1
+        JOIN Person p1 ON p1.Id = pa1.PersonId
+        JOIN GroupMember gm1 ON gm1.PersonId = p1.Id
+        JOIN [Group] g1 ON gm1.GroupId = g1.Id
+        WHERE pa1.Id = pd.PersonAliasId
+        AND g1.GroupTypeId = @cGROUPTYPE_FAMILY_ID
         AND g1.CampusId IS NOT NULL
+        INTERSECT
+        SELECT g2.CampusId
+        FROM PersonAlias pa2
+        JOIN Person p2 ON p2.Id = pa2.PersonId
+        JOIN GroupMember gm2 ON gm2.PersonId = p2.Id
+        JOIN [Group] g2 ON gm2.GroupId = g2.Id
+        WHERE pa2.Id = pd.DuplicatePersonAliasId
+        AND g2.GroupTypeId = @cGROUPTYPE_FAMILY_ID
         AND g2.CampusId IS NOT NULL
-        AND [g1].[GroupTypeId] = @cGROUPTYPE_FAMILY_ID
-        AND [g2].[GroupTypeId] = @cGROUPTYPE_FAMILY_ID
-        AND @compareByCampus = 1
+    )
  --PRINT'Update score for campus matches: ' + CAST(DATEDIFF(s, @ms, GETDATE()) as varchar)
  --SET @ms = GETDATE()
     -- Increment the score on potential matches that have the same marital status
