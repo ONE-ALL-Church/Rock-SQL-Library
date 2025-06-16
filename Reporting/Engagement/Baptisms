@@ -1,0 +1,16 @@
+SELECT  COUNT(CASE WHEN datediff(yy,isnull(p.BirthDate,'1/1/1900'),getdate()) >= 18  THEN 1 END) Adult, COUNT(CASE WHEN datediff(yy,p.BirthDate,getdate()) < 18  THEN 1 END) Child,
+COUNT(*) Total
+    FROM Person p
+    INNER JOIN AttributeValue av ON p.Id = av.EntityId AND av.AttributeId = 174
+    INNER JOIN AnalyticsSourceDate asd ON CAST(av.ValueAsDateTime AS date) = asd.[Date]
+    LEFT JOIN AttributeValue avHere
+    ON p.Id = avHere.EntityId
+        AND avHere.AttributeId = 714
+    
+WHERE av.ValueAsDateTime >= DATEADD(yy, DATEDIFF(yy, 0, GETDATE()) - 2, 0)
+AND (
+                avHere.ValueAsBoolean = 1
+                OR avHere.[Value] IS NULL
+                )
+    AND asd.Date BETWEEN '2024-01-01' AND '2024-12-31'
+
