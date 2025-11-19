@@ -18,12 +18,12 @@ WHERE g.GroupTypeId = 49
                     w.[Status] != 'Leader Input'
                     AND w.[Status] NOT LIKE '%Remove Leader%'
                     )
-                AND av.Value = TRY_CAST(g.Guid AS NVARCHAR(50))
+                AND TRY_CAST(av.Value AS UNIQUEIDENTIFIER) = g.Guid
         INNER JOIN AttributeValue avq
             ON w.Id = avq.EntityId
                 AND avq.AttributeId = 16359
         INNER JOIN DefinedValue AS cqdf
-            ON avq.[Value] = CAST(cqdf.Guid AS VARCHAR(50))
+            ON TRY_CAST(avq.[Value] AS UNIQUEIDENTIFIER) = cqdf.Guid
                 AND cqdf.[Value] = 'Winter 2026'
         )
     AND EXISTS (
@@ -39,7 +39,7 @@ WHERE g.GroupTypeId = 49
             ON g2.Id = av.EntityId
                 AND av.AttributeId = 6309
         INNER JOIN AttributeMatrix AS am
-            ON av.[Value] = convert(NVARCHAR(50), am.Guid)
+            ON TRY_CAST(av.[Value] AS UNIQUEIDENTIFIER) = am.Guid
         INNER JOIN AttributeMatrixItem AS cami
             ON am.Id = cami.AttributeMatrixId
         INNER JOIN AttributeValue AS cqav
@@ -49,13 +49,13 @@ WHERE g.GroupTypeId = 49
             ON cami.Id = ctav.EntityId
                 AND ctav.AttributeId = 6307
         INNER JOIN DefinedValue AS cqdf
-            ON cqav.[Value] = CAST(cqdf.Guid AS VARCHAR(50))
+            ON TRY_CAST(cqav.[Value] AS UNIQUEIDENTIFIER) = cqdf.Guid
                 AND (
                     cqdf.[Value] = 'Fall 2025'
                     --OR cqdf.[Value] = 'Summer 2022'
                     )
         INNER JOIN DefinedValue AS ctdf
-            ON ctav.[Value] = ctdf.Guid
+            ON TRY_CAST(ctav.[Value] AS UNIQUEIDENTIFIER) = ctdf.Guid
         INNER JOIN AttributeValue avHomeGroup
             ON ctdf.Id = avHomeGroup.EntityId
                 AND avHomeGroup.AttributeId = 14710
@@ -76,7 +76,7 @@ WHERE g.GroupTypeId = 49
             ON g2.Id = av.EntityId
                 AND av.AttributeId = 6309
         INNER JOIN AttributeMatrix AS am
-            ON av.[Value] = convert(NVARCHAR(50), am.Guid)
+            ON TRY_CAST(av.[Value] AS UNIQUEIDENTIFIER) = am.Guid
         INNER JOIN AttributeMatrixItem AS cami
             ON am.Id = cami.AttributeMatrixId
         INNER JOIN AttributeValue AS cqav
@@ -86,6 +86,6 @@ WHERE g.GroupTypeId = 49
             ON cami.Id = ctav.EntityId
                 AND ctav.AttributeId = 6307
         INNER JOIN DefinedValue AS cqdf
-            ON cqav.[Value] = CAST(cqdf.Guid AS VARCHAR(50))
-                AND cqdf.[Value] = 'Winter 2025'
+            ON TRY_CAST(cqav.[Value] AS UNIQUEIDENTIFIER) = cqdf.Guid
+                AND cqdf.[Value] = 'Winter 2026'
         )
