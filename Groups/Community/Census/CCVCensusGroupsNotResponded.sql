@@ -19,42 +19,7 @@ WHERE g.GroupTypeId = 49
                 AND avq.AttributeId = 16359
         INNER JOIN DefinedValue AS cqdf
             ON avq.[Value] = CAST(cqdf.Guid AS VARCHAR(50))
-                AND cqdf.[Value] = 'Spring 2025'
-        )
-    AND EXISTS (
-        SELECT 1
-        FROM GroupType AS gt
-        INNER JOIN [Group] AS g2
-            ON gt.Id = g2.GroupTypeId
-                AND gt.Id = 49
-                AND g2.IsActive = 1
-                AND g2.IsArchived != 1
-                AND g.Id = g2.Id
-        INNER JOIN [AttributeValue] AS av
-            ON g2.Id = av.EntityId
-                AND av.AttributeId = 6309
-        INNER JOIN AttributeMatrix AS am
-            ON av.[Value] = convert(NVARCHAR(50), am.Guid)
-        INNER JOIN AttributeMatrixItem AS cami
-            ON am.Id = cami.AttributeMatrixId
-        INNER JOIN AttributeValue AS cqav
-            ON cami.Id = cqav.EntityId
-                AND cqav.AttributeId = 6312
-        INNER JOIN AttributeValue AS ctav
-            ON cami.Id = ctav.EntityId
-                AND ctav.AttributeId = 6307
-        INNER JOIN DefinedValue AS cqdf
-            ON cqav.[Value] = CAST(cqdf.Guid AS VARCHAR(50))
-                AND (
-                    cqdf.[Value] = 'Winter 2025'
-                    --OR cqdf.[Value] = 'Summer 2022'
-                    )
-        INNER JOIN DefinedValue AS ctdf
-            ON ctav.[Value] = ctdf.Guid
-        INNER JOIN AttributeValue avHomeGroup
-            ON ctdf.Id = avHomeGroup.EntityId
-                AND avHomeGroup.AttributeId = 14710
-                AND avHomeGroup.ValueAsBoolean = 1
+                AND cqdf.[Value] = 'Fall 2025'
         )
     AND NOT EXISTS (
         SELECT 1
@@ -82,5 +47,5 @@ WHERE g.GroupTypeId = 49
                 AND ctav.AttributeId = 6307
         INNER JOIN DefinedValue AS cqdf
             ON cqav.[Value] = CAST(cqdf.Guid AS VARCHAR(50))
-                AND cqdf.[Value] = 'Spring 2025'
+                AND cqdf.[Value] = 'Fall 2025'
         )
