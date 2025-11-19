@@ -24,7 +24,7 @@ INNER JOIN AttributeValue AS cqav ON cami.Id = cqav.EntityId
 INNER JOIN AttributeValue AS ctav ON cami.Id = ctav.EntityId
     AND ctav.AttributeId = 6307
 INNER JOIN DefinedValue AS cqdf ON TRY_CAST(cqav.[Value] AS UNIQUEIDENTIFIER) = cqdf.Guid
-    AND (cqdf.[Value] = 'Spring 2025')
+    AND (cqdf.[Value] = 'Fall 2025')
 --OR cqdf.[Value] = 'Summer 2022'
 INNER JOIN DefinedValue AS ctdf ON TRY_CAST(ctav.[Value] AS UNIQUEIDENTIFIER) = ctdf.Guid
 WHERE am.Id = cami.AttributeMatrixId
@@ -48,7 +48,7 @@ WHERE NOT EXISTS (
         INNER JOIN AttributeValue avq ON w.Id = avq.EntityId
             AND avq.AttributeId = 16359
         INNER JOIN DefinedValue AS cqdf ON avq.[Value] = CAST(cqdf.Guid AS VARCHAR(50))
-            AND cqdf.[Value] = 'Fall 2025'
+            AND cqdf.[Value] = 'Winter 2026'
         )
     AND NOT EXISTS (
         SELECT 1
@@ -60,7 +60,7 @@ WHERE NOT EXISTS (
         INNER JOIN AttributeValue avq ON w.Id = avq.EntityId
             AND avq.AttributeId = 16359
         INNER JOIN DefinedValue AS cqdf ON avq.[Value] = CAST(cqdf.Guid AS VARCHAR(50))
-            AND cqdf.[Value] = 'Fall 2025'
+            AND cqdf.[Value] = 'Winter 2026'
         INNER JOIN AttributeValue avp ON w.Id = avp.EntityId
         INNER JOIN Attribute ap ON avp.AttributeId = ap.Id
             AND ap.[Key] = 'Person'
@@ -87,5 +87,5 @@ WHERE NOT EXISTS (
         INNER JOIN AttributeValue AS ctav ON cami.Id = ctav.EntityId
             AND ctav.AttributeId = 6307
         INNER JOIN DefinedValue AS cqdf ON cqav.[Value] = CAST(cqdf.Guid AS VARCHAR(50))
-            AND cqdf.[Value] = 'Fall 2025'
+            AND cqdf.[Value] = 'Winter 2026'
         )
